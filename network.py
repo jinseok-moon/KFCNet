@@ -9,11 +9,13 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 
+# Firstly, modeling with ResNet50
 class KFCNet(nn.Module):
     def __init__(self):
         super(KFCNet, self).__init__()
+        # b, 3, 255, 255
         self.layer1 = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=16, kernel_size=5, padding=1),  # B, 3, 255, 255
+            nn.Conv2d(in_channels=3, out_channels=96, kernel_size=11, padding=4),  # b, 96, 55, 55
             nn.ReLU(),
             nn.Dropout2d(0.5),
             nn.MaxPool2d(kernel_size=2),
