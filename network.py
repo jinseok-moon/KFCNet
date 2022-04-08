@@ -8,6 +8,22 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
+# todo: residual block not finished
+class ResBlock(nn.Module):
+    def __init__(self, in_dim, mid_dim, out_dim, is_downsample):
+        super(ResBlock, self).__init__()
+        self.residual = nn.Sequential(
+            nn.Conv2d(in_dim, mid_dim, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(mid_dim, out_dim, kernel_size=3, padding=2)
+        )
+
+        def forward(self, x):
+            out = self.residual(x)  # F(x)
+            out = out + x  # F(x) + x
+            out = nn.ReLU(out)
+            return out
+
 
 # Firstly, modeling with ResNet50
 class KFCNet(nn.Module):
@@ -20,6 +36,11 @@ class KFCNet(nn.Module):
             nn.MaxPool2d(3, 2, 1)
         )
 
+        self.layer2 = nn.Sequential(
+            ResBlock(64, 64, 256, False),
+            ResBlock(256, 64, 256, False),
+            ResBlock(256, 64, 256, True)
+        )
     def forward(self, x):
         x = self.layer1(x)
         x = x.view(x.size(0), -1)  # Flatten them for FC
