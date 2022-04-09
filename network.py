@@ -13,14 +13,21 @@ class ResBlock(nn.Module):
     def __init__(self, in_dim, mid_dim, out_dim, is_downsample):
         super(ResBlock, self).__init__()
         self.residual = nn.Sequential(
-            nn.Conv2d(in_dim, mid_dim, kernel_size=3, padding=1),
+            nn.Conv2d(in_dim, mid_dim, kernel_size=1, padding=1),
+            nn.BatchNorm2d(mid_dim),
             nn.ReLU(),
-            nn.Conv2d(mid_dim, out_dim, kernel_size=3, padding=2)
+            nn.Conv2d(mid_dim, out_dim, kernel_size=3, padding=1),
+            nn.BatchNorm2d(out_dim),
+            nn.ReLU(),
+            nn.Conv2d(out_dim, out_dim, kernel_size=1, padding=1),
+            nn.BatchNorm2d(out_dim),
+            nn.ReLU()
         )
 
         def forward(self, x):
             out = self.residual(x)  # F(x)
-            out = out + x  # F(x) + x
+            if is_downsample:
+                out = out + x  # F(x) + x
             out = nn.ReLU(out)
             return out
 
