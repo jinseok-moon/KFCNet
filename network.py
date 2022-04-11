@@ -27,7 +27,7 @@ class BasicBlock(nn.Module):
         self.shortcut = nn.Sequential()
 
         # 만약 size가 안맞아 합연산이 불가하다면, 연산 가능하도록 모양을 맞춰줌
-        if stride != 1:  # x와
+        if stride != 1:
             self.shortcut = nn.Sequential(
                 nn.Conv2d(in_dim, out_dim, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(out_dim)
@@ -87,20 +87,12 @@ class BottleNeck(nn.Module):
 class KFCNet(nn.Module):
     def __init__(self):
         super(KFCNet, self).__init__()
+
+        self.in_dim = 64
+
         self.layer1 = nn.Sequential(
             nn.Conv2d(3, 64, 7, 2, 3),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(3, 2, 1)
         )
-
-        self.layer3 = nn.Sequential(
-            ResBlock(256, 128, 512, False),
-            ResBlock(512, 128, 512, False),
-            ResBlock(256, 64, 256, True)
-        )
-
-    def forward(self, x):
-        out = self.layer1(x)
-        out = self.layer2(out)
-        return out
