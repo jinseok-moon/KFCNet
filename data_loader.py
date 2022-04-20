@@ -16,5 +16,13 @@ class Dataset(object):
                                      transforms.ToTensor(),
                                    transforms.Normalize((0.5, 0.5, 0.5),(0.5, 0.5, 0.5))])
 
-        self.dataset = datasets.ImageFolder(directory, transform=self.transform)  # Dataset
-        self.dataloader = torch.utils.data.DataLoader(self.dataset, batch_size=32, shuffle=True)  # Data Loader
+        self.data_set = {}
+        self.data_loader = {}
+        if directory[-1] != "/":
+            directory += "/"
+
+        for phase in ['train', 'test', 'val']:
+            self.data_set[phase] = datasets.ImageFolder(directory+phase, transform=self.transform)  # Dataset
+            self.data_loader[phase] = torch.utils.data.DataLoader(self.data_set[phase], batch_size=32, shuffle=True)
+
+        self.num_classes = self.data_loader["train"].num_classes
