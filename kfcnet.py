@@ -10,6 +10,7 @@ if torch.cuda.is_available():
     device = torch.device("cuda")
 else:
     device = torch.device("cpu")
+print(device)
 
 dataset = Dataset('./dataset/')
 model = network.KFCNet(dataset.num_classes).to(device)
