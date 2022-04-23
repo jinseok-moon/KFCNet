@@ -16,12 +16,12 @@ dataset = Dataset('./dataset/')
 model = network.KFCNet(dataset.num_classes).to(device)
 
 # 에포크, 배치 크기 지정
-epochs = 100
+epochs = 5
 batch_size = 64
-learning_rate = 0.001
+learning_rate = 0.01
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-network.train_model(model, dataset, criterion, optimizer,exp_lr_scheduler,device, num_epochs=100)
+network.train_model(model, dataset, criterion, optimizer, exp_lr_scheduler, device, num_epochs=epochs)

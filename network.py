@@ -4,6 +4,7 @@ import torchvision.models as models
 import time
 import copy
 
+
 class KFCNet(nn.Module):
     def __init__(self, num_classes):
         super(KFCNet, self).__init__()
@@ -81,4 +82,32 @@ def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epo
 
     # 가장 나은 모델 가중치를 불러옴
     model.load_state_dict(best_model_wts)
+    torch.save(model.state_dict(), './model/models.pt')
     return model
+
+
+def load_model(model, path):
+    model.load_state_dict(torch.load(path))  # load 함수 내에 저장 디렉토리 작성
+
+
+def test_model(model, dataset, criterion, device):
+    since = time.time()
+    accuracy = 0.0
+    total = 0.0
+    model.eval()   # 모델을 평가 모드로 설정
+    with torch.no_grad():
+
+        # 데이터 반복
+        for inputs, labels in dataset.data_loader['test']:
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+            total += labels.size(0)
+            accuracy += (preds == labels).sum().item()
+
+    time_elapsed = time.time() - since
+    print(f'Test complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
+    accuracy = (100 * accuracy / total)
+    print(f'Accuracy: {accuracy:4f}')
