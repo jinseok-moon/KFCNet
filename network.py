@@ -86,11 +86,12 @@ def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epo
     return model
 
 
+# todo: Need to check model path is valid
 def load_model(model, path):
     model.load_state_dict(torch.load(path))  # load 함수 내에 저장 디렉토리 작성
 
 
-def test_model(model, dataset, criterion, device):
+def test_model(model, dataset, device):
     since = time.time()
     accuracy = 0.0
     total = 0.0
