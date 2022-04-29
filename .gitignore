@@ -4,3 +4,5 @@ basedata/
 .ipynb_checkpoints/
 
 __pycache__/
+
+model/

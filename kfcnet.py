@@ -6,7 +6,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 
 
-if __name__ == '__main__':
+def main():
     if torch.cuda.is_available():
         device = torch.device("cuda")
     else:
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     print(model)
 
     # 에포크, 배치 크기 지정
-    epochs = 5
+    epochs = 25
     batch_size = 64
     learning_rate = 0.01
 
@@ -30,3 +30,6 @@ if __name__ == '__main__':
 
     network.train_model(model, dataset, criterion, optimizer, exp_lr_scheduler, device, num_epochs=epochs)
 
+
+if __name__ == '__main__':
+    main()
