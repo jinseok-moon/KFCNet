@@ -21,6 +21,7 @@ class KFCNet(nn.Module):
 
 
 def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epochs=25, model_save_step=5):
+    start = 0
     if os.path.isdir("model/"):
         start = load_model(model, "model", load_best=False)
 
@@ -28,8 +29,8 @@ def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epo
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
 
-    for epoch in range(num_epochs):
-        print(f'Epoch {epoch}/{num_epochs - 1}')
+    for epoch in range(1, num_epochs+1):
+        print(f'Epoch {epoch+start:03d}/{num_epochs+start - 1:03d}')
         print('-' * 10)
 
         # 각 에폭(epoch)은 학습 단계와 검증 단계를 갖습니다.
@@ -73,9 +74,9 @@ def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epo
 
             print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
-            if (epoch+1) % model_save_step == 0:
+            if (epoch+start) % model_save_step == 0:
                 # 모델 객체의 state_dict 저장
-                torch.save(model.state_dict(), './model/model_state_dict_{0}.pt'.format(start+epoch))
+                torch.save(model.state_dict(), './model/model_state_dict_{0:03d}.pt'.format(start+epoch))
             # 모델을 깊은 복사(deep copy)함
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
@@ -100,7 +101,7 @@ def load_model(model, path, load_best=True):
         model.load_state_dict(torch.load(path+'/model_state_dict_best.pt'))  # load 함수 내에 저장 디렉토리 작성
         start = 0
     else:
-        file_list = glob.glob(path +"/*")
+        file_list = sorted(glob.glob(path +"/*"))
         file_list_pt = [file for file in file_list if file.endswith(".pt")]
         model.load_state_dict(torch.load(file_list_pt[-2]))  # load 함수 내에 저장 디렉토리 작성
         start = int(file_list_pt[-2][file_list_pt[-2].index("dict_")+5:file_list_pt[-2].index(".pt")]) # start epoch
