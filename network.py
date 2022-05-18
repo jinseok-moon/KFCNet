@@ -14,7 +14,7 @@ class KFCNet(nn.Module):
         self.model = models.resnet50(pretrained=True)  # For transfer learning
 
         in_feat = self.model.fc.in_features
-        self.fc = nn.Linear(in_feat, num_classes)  # Change output classes of fcn
+        self.model.fc = nn.Linear(in_feat, num_classes)  # Change output classes of fcn
 
     def forward(self, x):
         return self.model(x)
