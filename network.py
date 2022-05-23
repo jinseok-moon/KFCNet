@@ -61,8 +61,8 @@ def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epo
                 # 통계
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
-            if phase == 'train':
-                scheduler.step()
+            # if phase == 'train':
+            #     scheduler.step()
 
             epoch_loss = running_loss / len(dataset.data_set[phase])
             epoch_acc = running_corrects.double() / len(dataset.data_set[phase])

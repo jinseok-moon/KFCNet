@@ -20,13 +20,13 @@ def main():
     print(model)
 
     epochs = 50
-    learning_rate = 0.01
+    learning_rate = 0.0005
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
+    # exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
 
-    network.train_model(model, dataset, criterion, optimizer, exp_lr_scheduler, device, num_epochs=epochs)
+    network.train_model(model, dataset, criterion, optimizer, None, device, num_epochs=epochs)
 
 
 if __name__ == '__main__':

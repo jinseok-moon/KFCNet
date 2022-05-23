@@ -4,7 +4,4 @@ basedata/
 .ipynb_checkpoints/
 
 __pycache__/
-
-model_sgd/
-
-model_bkp/
+model/
