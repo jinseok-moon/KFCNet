@@ -1,6 +1,8 @@
+import PIL.Image
 import torch
 from torch import nn
 import torchvision.models as models
+from torchvision import datasets, transforms
 import time
 import copy
 import glob
@@ -20,8 +22,11 @@ class KFCNet(nn.Module):
         return self.model(x)
 
 
-def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epochs=25, model_save_step=5):
-    start = load_model(model, "model")
+def train_model(model, dataset, criterion, optimizer, device, loadmd=False, num_epochs=25, model_save_step=5):
+    if loadmd:
+        start = load_model_train(model, "model")
+    else:
+        start = 1
     num_epochs += start
     for epoch in range(start, num_epochs):
         since = time.time()
@@ -83,7 +88,7 @@ def train_model(model, dataset, criterion, optimizer, scheduler, device, num_epo
 
 
 # todo: Need to check model path is valid
-def load_model(model, path):
+def load_model_train(model, path):
     file_list = sorted(glob.glob(path +"/*"))
     if file_list:
         file_list_pt = [file for file in file_list if file.endswith(".pt")]
@@ -92,6 +97,15 @@ def load_model(model, path):
     else:
         start = 1
     return start
+
+
+# todo: Need to check model path is valid
+def load_model(model, path):
+    file_list = sorted(glob.glob(path +"/*"))
+    if file_list:
+        file_list_pt = [file for file in file_list if file.endswith(".pt")]
+        model.load_state_dict(torch.load(file_list_pt[-1]))  # load 함수 내에 저장 디렉토리 작성
+    return model
 
 
 def test_model(model, dataset, device):
@@ -115,3 +129,21 @@ def test_model(model, dataset, device):
     print(f'Test complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
     accuracy = (100 * accuracy / total)
     print(f'Accuracy: {accuracy:4f}')
+
+
+def test_one_case(model, img, dataset, device):
+    model.eval()
+    with torch.no_grad():
+        img = PIL.Image.open(img)
+        tf1 = transforms.Resize((255, 255))
+        tf2 = transforms.ToTensor()
+        tf3 = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        img_t = tf1(img)
+        img_t = tf2(img_t)
+        img_t = tf3(img_t)
+        img_t = img_t.view([-1,3,255,255])
+        img_t = img_t.to(device)
+
+        outputs = model(img_t)
+        _, preds = torch.max(outputs, 1)
+        dataset.check_label(preds.data[0])

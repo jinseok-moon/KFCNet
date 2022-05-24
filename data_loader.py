@@ -1,6 +1,5 @@
 import torch
 from torchvision import datasets, transforms
-from torchvision.transforms import Compose
 
 
 class Dataset(object):
@@ -26,3 +25,6 @@ class Dataset(object):
             self.data_loader[phase] = torch.utils.data.DataLoader(self.data_set[phase], batch_size=32, shuffle=True)
 
         self.num_classes = len(self.data_set["train"].classes)
+
+    def check_label(self, preds):
+        print(self.data_set["train"].classes[preds])
