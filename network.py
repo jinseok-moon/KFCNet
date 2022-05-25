@@ -148,6 +148,7 @@ def test_case(model, img_path, dataset, device):
             plt.imshow(imgpil)
             ax.set_title(f"이 음식은 {probs_np[0]:.2f}%의 확률로 " + labels[0] + "입니다.")
             plt.show()
-            print(f"---{n}번째 사진 {img}---")
+            print(f"--- {n+1}번째 사진 {img} ---")
             for num in range(5):
                 print(f"top {num+1}: {labels[num]} {probs_np[num]:.2f}%")
+            print()
