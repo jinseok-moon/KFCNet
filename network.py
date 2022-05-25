@@ -2,11 +2,12 @@ import PIL.Image
 import torch
 from torch import nn
 import torchvision.models as models
-from torchvision import datasets, transforms
+from torchvision import transforms
 import time
-import copy
 import glob
-import os
+import matplotlib.pyplot as plt
+
+plt.rc('font', family='NanumGothic')
 
 
 class KFCNet(nn.Module):
@@ -22,11 +23,12 @@ class KFCNet(nn.Module):
         return self.model(x)
 
 
-def train_model(model, dataset, criterion, optimizer, device, loadmd=False, num_epochs=25, model_save_step=5):
+def train_model(model, dataset, criterion, optimizer, device, loadmd=True, num_epochs=25, model_save_step=5):
     if loadmd:
-        start = load_model_train(model, "model")
+        start, model = load_model(model, "model")
     else:
         start = 1
+
     num_epochs += start
     for epoch in range(start, num_epochs):
         since = time.time()
@@ -87,8 +89,7 @@ def train_model(model, dataset, criterion, optimizer, device, loadmd=False, num_
     return model
 
 
-# todo: Need to check model path is valid
-def load_model_train(model, path):
+def load_model(model, path):
     file_list = sorted(glob.glob(path +"/*"))
     if file_list:
         file_list_pt = [file for file in file_list if file.endswith(".pt")]
@@ -96,16 +97,7 @@ def load_model_train(model, path):
         start = int(file_list_pt[-1][file_list_pt[-1].index("dict_")+5:file_list_pt[-1].index(".pt")])+1  # start epoch
     else:
         start = 1
-    return start
-
-
-# todo: Need to check model path is valid
-def load_model(model, path):
-    file_list = sorted(glob.glob(path +"/*"))
-    if file_list:
-        file_list_pt = [file for file in file_list if file.endswith(".pt")]
-        model.load_state_dict(torch.load(file_list_pt[-1]))  # load 함수 내에 저장 디렉토리 작성
-    return model
+    return start, model
 
 
 def test_model(model, dataset, device):
@@ -131,19 +123,31 @@ def test_model(model, dataset, device):
     print(f'Accuracy: {accuracy:4f}')
 
 
-def test_one_case(model, img, dataset, device):
+def test_case(model, img_path, dataset, device):
     model.eval()
+    file_list = sorted(glob.glob(img_path + "/*"))
+    tf = transforms.Compose([transforms.Resize((255, 255)),
+                        transforms.ToTensor(),
+                        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     with torch.no_grad():
-        img = PIL.Image.open(img)
-        tf1 = transforms.Resize((255, 255))
-        tf2 = transforms.ToTensor()
-        tf3 = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-        img_t = tf1(img)
-        img_t = tf2(img_t)
-        img_t = tf3(img_t)
-        img_t = img_t.view([-1,3,255,255])
-        img_t = img_t.to(device)
-
-        outputs = model(img_t)
-        _, preds = torch.max(outputs, 1)
-        dataset.check_label(preds.data[0])
+        for n, img in enumerate(file_list):
+            imgpil = PIL.Image.open(img)
+            img_t = tf(imgpil)
+            img_t = img_t.view([-1,3,255,255])
+            img_t = img_t.to(device)
+            outputs = model(img_t)
+            _, preds = torch.max(outputs, 1)
+            prob = torch.softmax(outputs, 1)
+            probs_top5 = prob.data[0]
+            probs_top5, indices = probs_top5.sort(descending=True)
+            probs_np = probs_top5.cpu().numpy()[:5]*100
+            indices_np = indices.cpu().numpy()[:5]
+            labels = dataset.check_label(indices_np)
+            fig, ax = plt.subplots(1)
+            ax.axis('off')
+            plt.imshow(imgpil)
+            ax.set_title(f"이 음식은 {probs_np[0]:.2f}%의 확률로 " + labels[0] + "입니다.")
+            plt.show()
+            print(f"---{n}번째 사진 {img}---")
+            for num in range(5):
+                print(f"top {num+1}: {labels[num]} {probs_np[num]:.2f}%")

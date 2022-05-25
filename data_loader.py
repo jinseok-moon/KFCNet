@@ -1,9 +1,9 @@
 import torch
 from torchvision import datasets, transforms
-
+import numpy as np
 
 class Dataset(object):
-    def __init__(self, directory):
+    def __init__(self, directory, batch_size):
         """Load and Set Datasets
 
         Args:
@@ -22,9 +22,9 @@ class Dataset(object):
 
         for phase in ['train', 'test', 'val']:
             self.data_set[phase] = datasets.ImageFolder(directory+phase, transform=self.transform)  # Dataset
-            self.data_loader[phase] = torch.utils.data.DataLoader(self.data_set[phase], batch_size=32, shuffle=True)
+            self.data_loader[phase] = torch.utils.data.DataLoader(self.data_set[phase], batch_size=batch_size, shuffle=True)
 
         self.num_classes = len(self.data_set["train"].classes)
 
     def check_label(self, preds):
-        print(self.data_set["train"].classes[preds])
+        return np.array(self.data_set["train"].classes)[preds]
