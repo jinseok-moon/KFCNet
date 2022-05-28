@@ -123,7 +123,7 @@ def test_model(model, dataset, device):
     print(f'Accuracy: {accuracy:4f}')
 
 
-def test_case(model, img_path, dataset, device):
+def test_case(model, img_path, output_path, dataset, device):
     model.eval()
     file_list = sorted(glob.glob(img_path + "/*"))
     tf = transforms.Compose([transforms.Resize((255, 255)),
@@ -152,4 +152,4 @@ def test_case(model, img_path, dataset, device):
             axes[1].set_ylabel("확률 [%]")
             axes[1].set_xlabel("음식")
             outimg = img.replace(img_path+"\\", "")
-            plt.savefig(img_path+"/predicted_"+outimg)
+            plt.savefig(output_path+"/predicted_"+outimg)

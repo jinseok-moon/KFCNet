@@ -43,7 +43,7 @@ def main(_):
         if FLAGS.mode == 'eval':
             network.test_model(model, dataset, device)
         else:
-            network.test_case(model, FLAGS.test_path, dataset, device)
+            network.test_case(model, FLAGS.test_path, FLAGS.output_path, dataset, device)
 
 
 if __name__ == '__main__':
