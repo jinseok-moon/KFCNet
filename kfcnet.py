@@ -6,7 +6,6 @@ import torch.optim as optim
 
 from absl import app
 from absl import flags
-from absl import logging
 
 
 flags.DEFINE_enum(

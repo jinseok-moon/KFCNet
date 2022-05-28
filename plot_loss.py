@@ -21,7 +21,7 @@ with open("model_loss.txt", "r") as f:
         val_loss.append(float(ls))
         print(line.strip().split())
 
-fig, loss_ax =  plt.subplots(1, figsize=(6.4, 6.4), dpi=150)
+fig, loss_ax = plt.subplots(1, figsize=(6.4, 6.4), dpi=150)
 acc_ax = loss_ax.twinx()
 
 loss_ax.plot(train_loss, 'y', label='train loss')

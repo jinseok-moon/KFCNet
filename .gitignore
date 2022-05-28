@@ -2,6 +2,5 @@ dataset/
 .idea/
 basedata/
 .ipynb_checkpoints/
-
 __pycache__/
-model/
+bkp/

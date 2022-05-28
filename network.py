@@ -143,12 +143,13 @@ def test_case(model, img_path, dataset, device):
             probs_np = probs_top5.cpu().numpy()[:5]*100
             indices_np = indices.cpu().numpy()[:5]
             labels = dataset.check_label(indices_np)
-            fig, ax = plt.subplots(1)
-            ax.axis('off')
-            plt.imshow(imgpil)
-            ax.set_title(f"이 음식은 {probs_np[0]:.2f}%의 확률로 " + labels[0] + "입니다.")
-            plt.show()
-            print(f"--- {n+1}번째 사진 {img} ---")
-            for num in range(5):
-                print(f"top {num+1}: {labels[num]} {probs_np[num]:.2f}%")
-            print()
+            fig, axes = plt.subplots(1, 2, figsize=(12.8, 6.4), dpi=200)
+            axes[0].axis('off')
+            axes[0].imshow(imgpil)
+            axes[0].set_title(f"이 음식은 {probs_np[0]:.2f}%의 확률로 " + labels[0] + "입니다.")
+            axes[1].bar(labels, probs_np)
+            axes[1].set_title("top 5 Prediction")
+            axes[1].set_ylabel("확률 [%]")
+            axes[1].set_xlabel("음식")
+            outimg = img.replace(img_path+"\\", "")
+            plt.savefig(img_path+"/predicted_"+outimg)
